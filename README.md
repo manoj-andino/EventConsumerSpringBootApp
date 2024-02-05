@@ -1,1 +1,1 @@
-# MSKConsumerSpringBootApp
+# EventConsumerSpringBootApp
