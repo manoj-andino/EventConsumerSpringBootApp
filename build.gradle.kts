@@ -28,6 +28,11 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.kafka:spring-kafka-test")
+
+	implementation("com.amazonaws:aws-java-sdk-dynamodb:1.12.651")
+
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
+	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.1")
 }
 
 tasks.withType<Test> {
