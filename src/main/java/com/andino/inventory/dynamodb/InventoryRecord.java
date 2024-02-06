@@ -19,4 +19,7 @@ public class InventoryRecord {
 
     @DynamoDBAttribute(attributeName = "allocation")
     private Long allocation;
+
+    @DynamoDBAttribute(attributeName = "source_sync_timestamp")
+    private Long sourceSyncTimestamp;
 }

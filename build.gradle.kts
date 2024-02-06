@@ -33,6 +33,8 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
 	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.1")
+
+	implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka:4.1.0")
 }
 
 tasks.withType<Test> {

@@ -8,10 +8,12 @@ import com.andino.inventory.xml.Record;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -39,17 +41,26 @@ public class InventoryUpdateConsumer {
         return record -> {
             String productId = record.productId().toString();
             Long allocation = Long.valueOf(record.allocation());
+            Long allocationTimestampAtUtcEpoch = ZonedDateTime.parse(
+                    record.allocationTimestamp(),
+                    DateTimeFormatter.ISO_DATE_TIME
+                ).toEpochSecond();
 
             InventoryRecord inventoryByProductId = inventoryRepository.getInventoryByProductId(productId);
-            if (nonNull(inventoryByProductId)) {
-                inventoryRepository.updateInventoryByProductId(productId, allocation);
-            } else {
+            if (Objects.isNull(inventoryByProductId)) {
                 InventoryRecord newInventoryRecord = InventoryRecord.builder()
                         .productId(productId)
                         .allocation(allocation)
+                        .sourceSyncTimestamp(allocationTimestampAtUtcEpoch)
                         .build();
                 inventoryRepository.createInventoryRecord(newInventoryRecord);
+            } else if (isEligibleForUpdatingInventoryRecord(inventoryByProductId, allocationTimestampAtUtcEpoch)) {
+                inventoryRepository.updateInventoryByProductId(productId, allocation);
             }
         };
+    }
+
+    private boolean isEligibleForUpdatingInventoryRecord(InventoryRecord inventoryByProductId, Long allocationTimestampAtUtcEpoch) {
+        return inventoryByProductId.getSourceSyncTimestamp() < allocationTimestampAtUtcEpoch;
     }
 }
