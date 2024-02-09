@@ -25,7 +25,11 @@ public class InventoryUpdateConsumer {
 
     private final InventoryRepository inventoryRepository;
 
-    @KafkaListener(topics = "inventory-update", groupId = "inventory-update-group")
+    @KafkaListener(
+            containerFactory = "concurrentKafkaListenerContainerFactory",
+            topics = "inventory-update",
+            groupId = "inventory-update-group"
+    )
     public void consume(String payload) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Inventory inventory = objectMapper.readValue(payload, Inventory.class);
