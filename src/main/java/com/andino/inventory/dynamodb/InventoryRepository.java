@@ -18,9 +18,13 @@ public class InventoryRepository {
         return dynamoDBMapper.load(InventoryRecord.class, productId);
     }
 
-    public InventoryRecord updateInventoryByProductId(String productId, Long allocation) {
+    public InventoryRecord updateInventoryByProductId(
+            String productId,
+            Long allocation,
+            Long allocationTimestampAtUtcEpoch) {
         InventoryRecord load = dynamoDBMapper.load(InventoryRecord.class, productId);
         load.setAllocation(allocation);
+        load.setSourceSyncTimestamp(allocationTimestampAtUtcEpoch);
         dynamoDBMapper.save(load);
 
         return dynamoDBMapper.load(InventoryRecord.class, productId);
